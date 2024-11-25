@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Fantacalcio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Accedi al Fantacalcio</h1>
+        <form action="/login" method="POST">
+            <div class="input-group">
+                <label for="username">Nome Utente</label>
+                <input type="text" id="username" name="username" placeholder="Inserisci il tuo nome utente" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Inserisci la tua password" required>
+            </div>
+            <button type="submit" class="login-btn">Accedi</button>
+            <p class="signup-link">Non hai un account? <a href="/register">Registrati qui</a></p>
+        </form>
+    </div>
+</body>
+</html>
+

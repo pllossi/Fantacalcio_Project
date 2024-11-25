@@ -1,0 +1,52 @@
+
+from flask import Flask, render_template, request, redirect, session, flash, url_for
+import sqlite3
+
+print("Avvio dell'applicazione...")
+
+
+app = Flask(__name__)
+app.secret_key = 'supersecretkey'
+
+def query_db(query, args=(), one=False):
+	
+    con = sqlite3.connect('../database/fantacalcio.db')
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute(query, args)
+    rv = cur.fetchall()
+    con.commit()
+    con.close()
+    return (rv[0] if rv else None) if one else rv
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        is_admin = 1 if 'is_admin' in request.form else 0
+        
+        existing_user = query_db('SELECT * FROM users WHERE username = ?', (username,), one=True)
+        if existing_user:
+           flash("L'utente esiste già, scegli un altro nome utente.")
+        else:
+            query_db('INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)', (username, password, is_admin))
+            flash('Utente registrato con successo!')
+            return redirect(url_for('login'))
+    
+    return render_template('register.html')
+
+@app.route('/admin/users', methods=['GET', 'POST'])
+def manage_users():
+    if not session.get('admin'):
+        return redirect(url_for('home'))
+    
+    users = query_db('SELECT id, username, is_admin FROM users')
+    
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        query_db('DELETE FROM users WHERE id = ?', (user_id,))
+        flash('Utente eliminato con successo!')
+        return redirect(url_for('manage_users'))
+    
+    return render_template('manage_users.html', users=users)
